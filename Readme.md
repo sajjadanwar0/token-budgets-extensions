@@ -52,8 +52,8 @@ fraction of calls that can be reserved against a small budget.
 use token_budgets_extensions::AdaptiveEstimator;
 
 let est = AdaptiveEstimator::new()
-    .for_model("claude-haiku-4-5-20251001")
-    .with_safety_eps(0.05);
+.for_model("claude-haiku-4-5-20251001")
+.with_safety_eps(0.05);
 
 // On every observed (prompt, actual_input_tokens) pair, the estimator
 // updates an internal observed_max ratio.
