@@ -1,0 +1,11 @@
+[package]
+name = "token-budgets-extensions"
+version = "0.1.0"
+edition = "2024"
+description = "Adaptive estimator and streaming receipt extensions for token-budgets"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+token-budgets = { path = "../token-budgets" }  
+
+[dev-dependencies]
