@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Verus skeleton for the operational-refinement obligation in
-// `token-budgets-extensions`.
-//
 // ============================================================================
 // HONEST STATUS NOTICE
 // ============================================================================
