@@ -25,14 +25,14 @@ those figures as audited-corpus results, not a deployment guarantee: re-validate
 on your own prompt distribution before relying on a tighter margin.
 
 **Status: research extension.** The adaptive estimator's safety properties are
-not mechanised and are validated only on the audited corpora. The fixed-margin
+not mechanized and are validated only on the audited corpora. The fixed-margin
 estimator in the main crate is the recommended default.
 
 ### `verus-skeleton/`
 
-A Verus skeleton for the adaptive estimator with pre/post-conditions on
+A Verus skeleton for the adaptive estimator with pre- / post-conditions on
 `update(ratio)` and `current_margin()`, and one unproven obligation: that if the
-histogram is well-formed and the safety floor is honoured, the cap-soundness
+histogram is well-formed and the safety floor is honored, the cap-soundness
 result lifts to the adaptive case. Proving it would require a probabilistic
 envelope over the histogram and likely an Iris-style separation logic.
 
@@ -46,7 +46,7 @@ envelope over the histogram and likely an Iris-style separation logic.
 ## Companion components
 
 - [token-budgets](https://github.com/sajjadanwar0/token-budgets) — main library (validated defaults)
-- token-budgets-formals — mechanised cross-checks of the main library
+- token-budgets-formals — mechanized cross-checks of the main library
 - token-budgets-experiments — empirical evaluation
 
 ## License
