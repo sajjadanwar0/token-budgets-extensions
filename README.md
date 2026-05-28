@@ -1,76 +1,54 @@
 # token-budgets-extensions
 
-Extensions to the [token-budgets](https://github.com/sajjadanwar0/token-budgets) library that are not part of the main paper's contribution but build on its foundations.
+Extensions to [token-budgets](https://github.com/sajjadanwar0/token-budgets)
+that are **not** part of the main paper's contribution but build on its
+foundations. Part of the *Token Budgets* artifact (preprint, 2026).
 
 ## What's here
 
 ### `adaptive-estimator/`
 
-An online-learning extension to the `AnthropicEstimator` that adapts its margin per (model, prompt-distribution) tuple, instead of using a fixed 2.0× safety factor.
+An online-learning extension to `AnthropicEstimator` that adapts its margin per
+(model, prompt-distribution) tuple instead of a fixed 2.0x safety factor.
 
-The main paper uses a fixed 2.0× margin and documents that the margin is *load-bearing*: at margin 1.0×, A1 (UTF-8 byte-length dominance) holds only 1/3 of test cells; at margin 2.0×, A1 holds 30/30. This fixed-margin design is intentionally conservative.
+The main paper uses a fixed 2.0x margin and documents that the margin is
+*load-bearing* (paper §5.30–§5.31): at margin 1.0x, A1 holds on 1/3 of audited
+classes; at margin 2.0x, A1 holds 30/30. The fixed-margin design is intentionally
+conservative. The adaptive estimator instead keeps a rolling histogram of
+byte-length-to-token ratios per (model, prompt-class) and uses the 99th
+percentile plus headroom, with a 1.2x safety floor.
 
-The adaptive extension here explores a more aggressive design:
+The paper reports a live-API validation of the adaptive estimator (paper §5.28):
+median over-reservation drops from ~6.20x (static, broad corpus) / 3.92x (static,
+adversarial) to ~2.11x with 0/100 A1 violations on the audited corpora. Treat
+those figures as audited-corpus results, not a deployment guarantee: re-validate
+on your own prompt distribution before relying on a tighter margin.
 
-- Each (model, prompt-class) pair maintains a rolling-window histogram of byte-length → actual-tokens ratios.
-- The 99th-percentile observed ratio plus a small headroom is used as the per-class margin.
-- A safety floor of 1.2× prevents the adaptive margin from collapsing to unsafe values when sample sizes are small.
-
-**Status: prototype.** The adaptive estimator's safety properties have NOT been mechanized; they have not been validated empirically beyond the unit tests in this repository. **Do not use this in production without further evaluation.** The fixed-margin estimator in the main crate is the validated, recommended default.
+**Status: research extension.** The adaptive estimator's safety properties are
+not mechanised and are validated only on the audited corpora. The fixed-margin
+estimator in the main crate is the recommended default.
 
 ### `verus-skeleton/`
 
-A Verus mechanization skeleton for the adaptive estimator, with:
-
-- The abstract type `AdaptiveEstimator<H>` where `H` is a histogram parameter.
-- Pre/post-conditions on `update(ratio)` and `current_margin()`.
-- An unproven obligation: "if H is well-formed and the safety floor is honored, then the cap-soundness theorem (Verus tier 1 in the main paper) lifts to the adaptive case."
-
-The unproven obligation is the natural next research question. It would require formalizing a probabilistic envelope over the histogram and may need an Iris-like separation logic for the proof.
-
-## Why this lives in a separate repository
-
-The main `token-budgets` crate is intentionally minimal and conservative. Every claim it makes is formally verified or empirically calibrated. The extensions here are speculative — interesting future directions, but not validated to the standard of the main paper.
-
-Keeping them separate makes the main crate's contract clearer to readers and reviewers, while still providing a public landing zone for the follow-up work.
-
-## How to use (if you must)
-
-```toml
-[dependencies]
-token-budgets = "0.5"
-token-budgets-extensions = { git = "https://github.com/sajjadanwar0/token-budgets-extensions" }
-```
-
-```rust
-use token_budgets::Budget;
-use token_budgets_extensions::AdaptiveEstimator;
-
-let estimator = AdaptiveEstimator::new()
-    .with_safety_floor(1.2);
-let estimate = estimator.estimate(&prompt, ModelClass::Anthropic);
-// ... use as a drop-in replacement for AnthropicEstimator
-```
-
-The API surface mirrors the main crate's `AnthropicEstimator`. Replacing one with the other is a one-line change.
+A Verus skeleton for the adaptive estimator with pre/post-conditions on
+`update(ratio)` and `current_margin()`, and one unproven obligation: that if the
+histogram is well-formed and the safety floor is honoured, the cap-soundness
+result lifts to the adaptive case. Proving it would require a probabilistic
+envelope over the histogram and likely an Iris-style separation logic.
 
 ## Open research questions
 
-The adaptive estimator raises questions that are genuinely open:
+1. What is the worst-case safety guarantee under a 1.2x floor on adversarial
+   prompt distributions?
+2. How fast does the per-class histogram converge? (Empirically ~50 calls.)
+3. Can this extend to non-tokenizer cost models (reasoning tokens, image, audio)?
 
-1. **What is the worst-case safety guarantee?** With a 1.2× floor, A1 can still be violated on adversarial prompt distributions. What does a sound lower bound look like?
-2. **How fast does the histogram converge?** Empirically, the per-class margin stabilizes within ~50 calls; theoretically, the convergence rate depends on the prompt distribution's tail.
-3. **Can this be extended to non-tokenizer-based cost models?** GPT-OSS reasoning tokens, image inputs, audio — each has its own scaling law.
+## Companion components
 
-If you're a PhD student looking for a project, any of these is a credible MSc/PhD scope.
-
-## Companion repositories
-
-- [token-budgets](https://github.com/sajjadanwar0/token-budgets) — main library (validated, conservative defaults)
-- [token-budgets-formals](https://github.com/sajjadanwar0/token-budgets-formals) — formal verification of the main library
-- [token-budgets-experiments](https://github.com/sajjadanwar0/token-budgets-experiments) — empirical evaluation
-
+- [token-budgets](https://github.com/sajjadanwar0/token-budgets) — main library (validated defaults)
+- token-budgets-formals — mechanised cross-checks of the main library
+- token-budgets-experiments — empirical evaluation
 
 ## License
 
-Dual MIT/Apache-2.0. See `LICENSE-MIT` and `LICENSE-APACHE`.
+Dual MIT/Apache-2.0.
