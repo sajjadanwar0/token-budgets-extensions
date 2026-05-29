@@ -18,11 +18,15 @@ conservative. The adaptive estimator instead keeps a rolling histogram of
 byte-length-to-token ratios per (model, prompt-class) and uses the 99th
 percentile plus headroom, with a 1.2x safety floor.
 
-The paper reports a live-API validation of the adaptive estimator (paper §5.28):
-median over-reservation drops from ~6.20x (static, broad corpus) / 3.92x (static,
-adversarial) to ~2.11x with 0/100 A1 violations on the audited corpora. Treat
-those figures as audited-corpus results, not a deployment guarantee: re-validate
-on your own prompt distribution before relying on a tighter margin.
+The paper reports a live-API validation of the adaptive estimator (paper §5.28).
+On the broad corpus, the static estimator's over-reservation is 6.20x mean
+(2.51x median; N=5,190 per-call events, `token-budgets-experiments/refund-live/`).
+On an adversarial corpus, the adaptive estimator cuts the *median effective
+margin* from 3.92x (static 2.0x) to 2.11x
+(`token-budgets-experiments/multiway/adaptive_adversarial_summary.csv`), with
+zero A1 violations on the audited corpora. Treat those figures as audited-corpus
+results, not a deployment guarantee: re-validate on your own prompt distribution
+before relying on a tighter margin.
 
 **Status: research extension.** The adaptive estimator's safety properties are
 not mechanised and are validated only on the audited corpora. The fixed-margin
