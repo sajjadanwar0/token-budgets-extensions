@@ -50,9 +50,26 @@ envelope over the histogram and likely an Iris-style separation logic.
 ## Companion components
 
 - [token-budgets](https://github.com/sajjadanwar0/token-budgets) — main library (validated defaults)
-- token-budgets-formals — mechanised cross-checks of the main library
+- token-budgets-formals — mechanized cross-checks of the main library
 - token-budgets-experiments — empirical evaluation
+
+## Citation
+
+```bibtex
+@misc{khan2026tokenbudgets,
+  title         = {Token Budgets: An Empirical Catalog of 63 LLM-Agent
+                   Budget-Overrun Incidents, with an Affine-Typed Rust
+                   Mitigation as a Case Study},
+  author        = {Khan, Sajjad},
+  year          = {2026},
+  eprint        = {2606.04056},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.SE},
+  doi           = {10.48550/arXiv.2606.04056},
+  url           = {https://arxiv.org/abs/2606.04056}
+}
+```
 
 ## License
 
-Dual MIT/Apache-2.0.
+Paper: CC BY 4.0 (arXiv). Code: see the repository `LICENSE` file.
